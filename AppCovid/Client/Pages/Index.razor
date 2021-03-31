@@ -1,0 +1,40 @@
+﻿@page "/"
+
+<MudGrid>
+    <MudItem xs="12">
+        <MudGrid Spacing="3" Justify="Justify.Center">
+            @foreach (var card in cardsPaginas) {
+                <MudItem Class="m-4">
+                    <MudLink Href="@card.Link" Underline="Underline.None" Class="text-center" Color="Color.Inherit">
+                        <MudCard Style="height:120px; width:200px;">
+                            <MudCardContent>
+                                <div>
+                                    <MudIcon Icon="@card.Icono" Size="MudBlazor.Size.Large"></MudIcon>
+                                </div>
+                                <div>
+                                    <h6 class="mat-subtitle2">@card.Nombre</h6>
+                                </div>
+                            </MudCardContent>
+
+                        </MudCard>
+                    </MudLink>
+
+                </MudItem>
+            }
+        </MudGrid>
+    </MudItem>
+</MudGrid>
+@code{
+    private class CustomCard {
+        public string Link { get; set; }
+        public string Nombre { get; set; }
+        public string Icono { get; set; }
+    }
+
+    List<CustomCard> cardsPaginas = new List<CustomCard>() {
+        new CustomCard { Link = "register", Nombre = "Register a Person", Icono = Icons.Filled.AccountCircle },
+        new CustomCard { Link = "view", Nombre = "View People", Icono = Icons.Filled.Contacts },
+        new CustomCard { Link = "about", Nombre = "About us", Icono = Icons.Filled.ContactSupport },
+    };
+
+}

@@ -1,0 +1,65 @@
+﻿@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="MyCustomTheme" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="1" Dense="true">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudText Typo="Typo.h5" Class="ml-3">App Covid</MudText>
+        <MudAppBarSpacer />
+        <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+        <img src="https://cdn.pixabay.com/photo/2020/04/01/21/05/mask-4992754_1280.png" />
+        <MudNavMenu Class="mud-width-full">
+            <MudDivider Class="my-2" />
+            <MudNavLink Href="/" Icon="@Icons.Filled.Home">Inicio</MudNavLink>
+            <MudNavLink Href="register" Icon="@Icons.Filled.AccountCircle">Register</MudNavLink>
+            <MudNavLink Href="view" Icon="@Icons.Filled.Contacts">View people</MudNavLink>
+            <MudNavLink Href="about" Icon="@Icons.Filled.ContactSupport">About</MudNavLink>
+        </MudNavMenu>
+    </MudDrawer>
+    <MudMainContent>
+        @Body
+        <MudFab Class="btn-flotante" Link="about" Color="Color.Primary" Icon="@Icons.Material.Filled.ContactSupport" />
+
+    </MudMainContent>
+
+
+</MudLayout>
+
+<style>
+    .btn-flotante {
+	position: fixed;
+	bottom: 40px;
+	right: 40px;
+	transition: all 300ms ease 0ms;
+	box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+	z-index: 99;
+}
+.btn-flotante:hover {
+	background-color: #2c2fa5; /* Color de fondo al pasar el cursor */
+	box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.3);
+	transform: translateY(-7px);
+}
+</style>
+
+@code{
+    bool _drawerOpen = true;
+
+    void DrawerToggle() {
+        _drawerOpen = !_drawerOpen;
+    }
+    bool Opened = true;
+
+    MudTheme MyCustomTheme = new MudTheme() {
+        Palette = new Palette() {
+            Primary = Colors.Blue.Default,
+            Secondary = Colors.Green.Accent4,
+            AppbarBackground = Colors.Indigo.Default,
+        },
+    };
+
+}
