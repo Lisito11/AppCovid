@@ -21,7 +21,7 @@ namespace AppCovid.Server {
             services.AddAutoMapper(typeof(Startup));
             services.AddControllersWithViews();
             services.AddRazorPages();
-            services.AddDbContext<dajd2mj0ciopa3Context>(options => options.UseNpgsql(Configuration.GetConnectionString("Dbconnection")));
+            services.AddDbContext<dajd2mj0ciopa3Context>(options => options.UseNpgsql(Configuration.GetConnectionString("ConnectionString")));
             services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
         }
 
