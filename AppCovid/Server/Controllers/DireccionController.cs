@@ -1,6 +1,7 @@
 ﻿using AppCovid.Server;
 using AppCovid.Server.Controllers;
 using AppCovid.Server.DTOs.Direccion;
+using AppCovid.Shared;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 namespace AppCovid.Server.Controllers {
     [ApiController]
     [Route("api/direcciones")]
+
     public class DireccionController : CustomBaseController {
         private readonly dajd2mj0ciopa3Context context;
         private readonly IMapper mapper;
@@ -30,7 +32,13 @@ namespace AppCovid.Server.Controllers {
         //Metodo Get(id)
         [HttpGet("{id:int}", Name = "obtenerDireccion")]
         public async Task<ActionResult<DireccionDTO>> Get(int id) {
-            return await Get<Direccion, DireccionDTO>(id);
+            var user = context.Direccion.FirstOrDefault(x => x.Id == id);
+
+            if(user == null)
+            {
+                return NotFound();
+            }
+            return user;
         }
 
         //Metodo Post

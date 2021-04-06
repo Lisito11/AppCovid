@@ -1,5 +1,6 @@
 ﻿
 using AppCovid.Server.DTOs;
+using AppCovid.Shared;
 using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -39,19 +40,29 @@ namespace AppCovid.Server.Controllers {
                  .ThenInclude(x => x.Pais)
                  .FirstOrDefaultAsync(x => x.Id == id);
             return mapper.Map<PersonaDTO>(vacunados);
+            var autor = context.Personas.FirstOrDefault(x => x.Id == id);
+
+            if (autor == null)
+            {
+                return NotFound();
+            }
+
+            return autor;
         }
 
 
         //Metodo Post
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] PersonaCreacionDTO personaCreacionDTO) {
-            return await Post<PersonaCreacionDTO, Persona, PersonaDTO>(personaCreacionDTO, "obtenerPersona");
+        public async ActionResult Post([FromBody] PersonaCreacionDTO personaCreacionDTO) {
+            context.Personas.Add(personaCreacionDTO);
+            context.SaveChanges();
+            return new CreatedAtRouteResult("ObtenerPersona", new { id = personaCreacionDTO.Id }, personaCreacionDTO);
         }
 
         //Metodo Put
         [HttpPut("{id:int}")]
         public async Task<ActionResult> Put(int id, [FromBody] PersonaCreacionDTO personaCreacionDTO) {
-            return await Put<PersonaCreacionDTO, Persona>(id, personaCreacionDTO);
+            return await  Put<PersonaCreacionDTO, Persona>(id, personaCreacionDTO);
         }
 
         //Metodo Patch

@@ -1,10 +1,9 @@
-﻿using AppCovid.Server.Helpers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 #nullable disable
 
-namespace AppCovid.Server
+namespace AppCovid.Shared
 {
     public partial class Direccion : IId {
         public Direccion() {

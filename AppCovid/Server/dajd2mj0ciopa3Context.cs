@@ -1,4 +1,5 @@
 ﻿using System;
+using AppCovid.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -21,7 +22,7 @@ namespace AppCovid.Server
         public virtual DbSet<Pais> Pais { get; set; }
         public virtual DbSet<Persona> Personas { get; set; }
         public virtual DbSet<Provincia> Provincia { get; set; }
-
+        public object Direccion { get; internal set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

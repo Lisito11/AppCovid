@@ -1,4 +1,8 @@
 ﻿@page "/register"
+@using System.Net;
+@using System;
+@using Data;
+@using Newtonsoft.Json;
 
 <h3>Register</h3>
 
@@ -15,9 +19,9 @@
         <MudExpansionPanels>
             <MudExpansionPanel Text="Datos Personales">
                 <MudTextField T="string" Label="Cédula" Required="true" RequiredError="@MensajeError("Cédula")" @bind-Value="@Cedula" />
-                <MudTextField T="string" Label="Nombres" Required="true" RequiredError="@MensajeError("Nombres")" @bind-Value="@Nombres" />
-                <MudTextField T="string" Label="Fecha de Nacimiento" Required="true" RequiredError="@MensajeError("FechaNacimiento")" @bind-Value="@FechaNacimiento" />
-                <MudTextField T="string" Label="Apellidos" Required="true" RequiredError="@MensajeError("Apellidos")" @bind-Value="Apellidos" />
+                @*<MudTextField T="string" Label="Nombres" Required="true" RequiredError="@MensajeError("Nombres")" @bind-Value="@Nombres" />
+                    <MudTextField T="string" Label="Fecha de Nacimiento" Required="true" RequiredError="@MensajeError("FechaNacimiento")" @bind-Value="@FechaNacimiento" />
+                    <MudTextField T="string" Label="Apellidos" Required="true" RequiredError="@MensajeError("Apellidos")" @bind-Value="Apellidos" />*@
                 <MudTextField T="string" Label="Telefono" Required="true" RequiredError="@MensajeError("Telefono")" @bind-Value="@Telefono" />
                 <MudTextField T="string" Label="Email" Required="true" RequiredError="@MensajeError("Email")" @bind-Value="@Email" />
                 <MudTextField T="string" Label="Tipo de sangre" Required="true" RequiredError="@MensajeError("Tipo_Sangre")" @bind-Value="Tipo_Sangre" />
@@ -30,17 +34,23 @@
                         <MudTextField @bind-Value="CalleDireccion" Label="Calle" Variant="Variant.Text"></MudTextField>
                     </MudItem>
                     <MudItem sm="4">
-                        <MudTextField @bind-Value="ProvinciaSeleccionada" Label="Provincia" Variant="Variant.Text"></MudTextField>
+                        <MudSelect T="string" Label="Provincia" @bind-Value="ProvinciaSeleccionada">
+                            @foreach (var provincia in provincias)
+                            {<MudSelectItem Value="@provincia.Id.ToString()"> @provincia.NombreProvincia </MudSelectItem>}
+                        </MudSelect>
                     </MudItem>
-                    <MudItem sm="4">
-                        <MudTextField @bind-Value="SectorSeleccionada" Label="Provincia" Variant="Variant.Text"></MudTextField>
+                    <MudItem sm="3">
+                        <MudSelect T="string" Label="Pais" @bind-Value="PaisSeleccionado">
+                            @foreach (var pais in paises)
+                            {<MudSelectItem Value="@pais.Id.ToString()"> @pais.NombrePais </MudSelectItem>}
+                        </MudSelect>
                     </MudItem>
                 </MudGrid>
             </MudExpansionPanel>
 
         </MudExpansionPanels>
         <MudCardActions>
-            <MudButton @onclick="@Registrar" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Registrar</MudButton>
+            <MudButton @onclick="@ReadApi" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Registrar</MudButton>
         </MudCardActions>
     </MudCard>
     <MudText Typo="Typo.body2" Align="Align.Center" Class="my-4">
@@ -64,13 +74,15 @@
 </div>
 
 @code {
+
     MudForm form;
     bool showMarker = false;
     bool success;
     string MensajeError(string field) => $"{field} debe introducirse!";
     public string Cedula { get; set; }
     public string Nombres { get; set; }
-    public string Apellidos { get; set; }
+    public string Apellido1 { get; set; }
+    public string Apellido2 { get; set; }
     public string Telefono { get; set; }
     public string Email { get; set; }
     public string Tipo_Sangre { get; set; }
@@ -78,37 +90,89 @@
     public string TenerCovid { get; set; }
     public string FechaNacimiento { get; set; }
     public string ProvinciaSeleccionada { get; set; }
-    public string SectorSeleccionada { get; set; }
+    public string PaisSeleccionado { get; set; }
     public string Latitud { get; set; }
     public string Longitud { get; set; }
     public string CalleDireccion { get; set; }
+    string link = "https://api.adamix.net/apec/cedula/";
+    string api;
+    string json;
+    CedulaApiResponse res;
+
+    private List<Pais> paises = new List<Pais>();
+
+    private List<Provincia> provincias = new List<Provincia>();
     private List<Persona> personas = new List<Persona>();
-    private Direccion GeocodingDireccion = new Direccion();
+    private Direccion direccion = new Direccion();
+    private Geocoding GeocodingDireccion = new Geocoding();
+    private List<Direccion> direcciones = new List<Direccion>();
     Persona persona = new Persona();
     Persona PersonaValidada = new Persona();
+    Provincia provincia = new Provincia();
+    Pais pais = new Pais();
+
+
 
     protected override async Task OnInitializedAsync()
     {
         personas = await Http.GetFromJsonAsync<List<Persona>>("api/personas");
     }
+
+    void ReadApi()
+    {
+
+
+        try
+        {
+            var cedual = Int64.Parse(Cedula);
+        }
+        catch (FormatException e)
+        {
+
+            return;
+        }
+
+        api = link + Cedula;
+
+        json = new WebClient().DownloadString(api);
+
+        res = JsonConvert.DeserializeObject<CedulaApiResponse>(json);
+
+        Nombres = res.Nombres;
+        Apellido1 = res.Apellido1;
+        Apellido2 = res.Apellido2;
+
+        Registrar();
+
+    }
+
     private async Task Registrar()
     {
         if (!String.IsNullOrEmpty(CalleDireccion) && !String.IsNullOrEmpty(ProvinciaSeleccionada))
         {
-            GeocodingDireccion = await Http.GetFromJsonAsync<Direccion>($"https://maps.googleapis.com/maps/api/geocode/json?address={CalleDireccion.Replace(" ", "+")},+{ProvinciaSeleccionada.Replace(" ", "+")}&key=AIzaSyD2tTEiP_uPyq8Re9YnQyD6LkB5TGX1xnw");
+            GeocodingDireccion = await Http.GetFromJsonAsync<Geocoding>($"https://maps.googleapis.com/maps/api/geocode/json?address={CalleDireccion.Replace(" ", "+")},+{ProvinciaSeleccionada.Replace(" ", "+")}&key=AIzaSyD2tTEiP_uPyq8Re9YnQyD6LkB5TGX1xnw");
             Latitud = GeocodingDireccion.Results[0].Geometry.Location.Lat.ToString();
             Longitud = GeocodingDireccion.Results[0].Geometry.Location.Lng.ToString();
             persona.Cedula = Cedula;
             persona.Nombres = Nombres;
-            persona.Apellidos = Apellidos;
-            persona.Provincia = ProvinciaSeleccionada;
-            persona.Latitud = double.Parse(Latitud);
-            persona.Longitud = double.Parse(Longitud);
+            persona.Apellido1 = Apellido1;
+            persona.Apellido2 = Apellido2;
+            persona.Telefono = Telefono;
+            persona.Email = Email;
+
+            direccion.ProvinciaId = int.Parse(ProvinciaSeleccionada);
+            direccion.PaisId = int.Parse(PaisSeleccionado);
+            direccion.Calle = CalleDireccion;
+
+            direccion.Latitud = Convert.ToDecimal(Latitud);
+            direccion.Logitud = Convert.ToDecimal(Longitud);
+
+            var respuesta = await Http.PostAsJsonAsync("api/direcciones", direccion);
             var respuestaPersona = await Http.PostAsJsonAsync("api/personas", persona);
 
             if (respuestaPersona.IsSuccessStatusCode)
             {
-                Snackbar.Add($"{Nombres} {Apellidos} Registrado correctamente.", Severity.Success);
+                Snackbar.Add($"{Nombres} {Apellido1} {Apellido2} Registrado correctamente.", Severity.Success);
                 navigationManager.NavigateTo("exportar");
             }
             else
@@ -119,25 +183,28 @@
 
         }
     }
-    public class RegisterAccountForm
-    {
-        [Required]
-        [StringLength(8, ErrorMessage = "Name length can't be more than 8.")]
-        public string Username { get; set; }
 
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; }
+    //public class RegisterAccountForm
+    //{
+    //    [Required]
+    //    [StringLength(8, ErrorMessage = "Name length can't be more than 8.")]
+    //    public string Username { get; set; }
 
-        [Required]
-        [StringLength(30, ErrorMessage = "Password must be at least 8 characters long.", MinimumLength = 8)]
-        public string Password { get; set; }
+    //    [Required]
+    //    [EmailAddress]
+    //    public string Email { get; set; }
 
-        [Required]
-        [Compare(nameof(Password))]
-        public string Password2 { get; set; }
+    //    [Required]
+    //    [StringLength(30, ErrorMessage = "Password must be at least 8 characters long.", MinimumLength = 8)]
+    //    public string Password { get; set; }
 
-    }
+    //    [Required]
+    //    [Compare(nameof(Password))]
+    //    public string Password2 { get; set; }
+
+    //}
+
+
 
     private void OnValidSubmit(EditContext context)
     {

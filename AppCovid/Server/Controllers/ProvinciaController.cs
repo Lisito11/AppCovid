@@ -1,4 +1,5 @@
 ﻿using AppCovid.Server.DTOs;
+using AppCovid.Shared;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
