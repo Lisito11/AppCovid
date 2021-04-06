@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31005.135
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppCovid.Server", "AppCovid\Server\AppCovid.Server.csproj", "{8E542D80-FEFF-4299-AE0E-E4F999F984EA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppCovid.Server", "AppCovid\Server\AppCovid.Server.csproj", "{8E542D80-FEFF-4299-AE0E-E4F999F984EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppCovid.Client", "AppCovid\Client\AppCovid.Client.csproj", "{70B5CF78-C4B7-48C6-86E4-A9C95C996BF9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppCovid.Client", "AppCovid\Client\AppCovid.Client.csproj", "{70B5CF78-C4B7-48C6-86E4-A9C95C996BF9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppCovid.Shared", "AppCovid\Shared\AppCovid.Shared.csproj", "{E214BACB-8E5B-47FA-BEFF-D03630F65BF9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppCovid.Shared", "AppCovid\Shared\AppCovid.Shared.csproj", "{E214BACB-8E5B-47FA-BEFF-D03630F65BF9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
