@@ -1,4 +1,5 @@
 ﻿using AppCovid.Server.Helpers;
+using AppCovid.Shared;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

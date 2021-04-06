@@ -30,15 +30,10 @@ namespace AppCovid.Server.Controllers {
         }
 
         //Metodo Get(id)
+        //Metodo Get(id)
         [HttpGet("{id:int}", Name = "obtenerDireccion")]
         public async Task<ActionResult<DireccionDTO>> Get(int id) {
-            var user = context.Direccion.FirstOrDefault(x => x.Id == id);
-
-            if(user == null)
-            {
-                return NotFound();
-            }
-            return user;
+            return await Get<Direccion, DireccionDTO>(id);
         }
 
         //Metodo Post

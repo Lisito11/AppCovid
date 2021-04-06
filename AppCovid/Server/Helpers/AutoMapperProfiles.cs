@@ -3,6 +3,7 @@ using AppCovid.Server.DTOs.Direccion;
 using AppCovid.Server.DTOs.Pais;
 using AppCovid.Server.DTOs.Persona;
 using AppCovid.Server.DTOs.Provincia;
+using AppCovid.Shared;
 using AutoMapper;
 using System;
 using System.Collections.Generic;
