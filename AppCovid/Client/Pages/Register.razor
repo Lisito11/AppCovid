@@ -12,205 +12,177 @@
 @inject HttpClient Http
 @inject NavigationManager navigationManager
 
-@using System.ComponentModel.DataAnnotations
 
 <div style="max-width: 400px;">
     <MudCard Justify="Justify.Center">
-        <MudExpansionPanels>
-            <MudExpansionPanel Text="Datos Personales">
-                <MudTextField T="string" Label="Cédula" Required="true" RequiredError="@MensajeError("Cédula")" @bind-Value="@Cedula" />
-                @*<MudTextField T="string" Label="Nombres" Required="true" RequiredError="@MensajeError("Nombres")" @bind-Value="@Nombres" />
-                    <MudTextField T="string" Label="Fecha de Nacimiento" Required="true" RequiredError="@MensajeError("FechaNacimiento")" @bind-Value="@FechaNacimiento" />
-                    <MudTextField T="string" Label="Apellidos" Required="true" RequiredError="@MensajeError("Apellidos")" @bind-Value="Apellidos" />*@
-                <MudTextField T="string" Label="Telefono" Required="true" RequiredError="@MensajeError("Telefono")" @bind-Value="@Telefono" />
-                <MudTextField T="string" Label="Email" Required="true" RequiredError="@MensajeError("Email")" @bind-Value="@Email" />
-                <MudTextField T="string" Label="Tipo de sangre" Required="true" RequiredError="@MensajeError("Tipo_Sangre")" @bind-Value="Tipo_Sangre" />
-                <MudTextField T="string" Label="Ha tenido Covid" Required="true" RequiredError="@MensajeError("TenerCovid")" @bind-Value="@TenerCovid" />
-                <MudTextField T="string" Label="Justifique porque deben vacunarlo en su casa" Required="true" RequiredError="@MensajeError("Justificacion")" @bind-Value="Justificacion" />
-            </MudExpansionPanel>
-            <MudExpansionPanel Text="Dirección">
-                <MudGrid Spacing="1">
-                    <MudItem>
-                        <MudTextField @bind-Value="CalleDireccion" Label="Calle" Variant="Variant.Text"></MudTextField>
-                    </MudItem>
-                    <MudItem sm="4">
-                        <MudSelect T="string" Label="Provincia" @bind-Value="ProvinciaSeleccionada">
-                            @foreach (var provincia in provincias)
-                            {<MudSelectItem Value="@provincia.Id.ToString()"> @provincia.NombreProvincia </MudSelectItem>}
-                        </MudSelect>
-                    </MudItem>
-                    <MudItem sm="3">
-                        <MudSelect T="string" Label="Pais" @bind-Value="PaisSeleccionado">
-                            @foreach (var pais in paises)
-                            {<MudSelectItem Value="@pais.Id.ToString()"> @pais.NombrePais </MudSelectItem>}
-                        </MudSelect>
-                    </MudItem>
-                </MudGrid>
-            </MudExpansionPanel>
+        <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
+            <MudExpansionPanels>
 
-        </MudExpansionPanels>
+                <MudExpansionPanel Text="Datos Personales">
+                    <MudTextField T="string" Label="Cédula" Required="true" RequiredError="@MensajeError("Cédula")" @bind-Value="@CedulaSeleccionada" TextChanged="BuscarDatosCedula" />
+                    <MudTextField T="string" Label="Nombres" Required="true" RequiredError="@MensajeError("Nombres")" @bind-Value="@Nombres" />
+                    <MudTextField T="string" Label="Primer Apellido" Required="true" RequiredError="@MensajeError("el primer apellidos")" @bind-Value="Apellido1" />
+                    <MudTextField T="string" Label="Segundo Apellido" Required="true" RequiredError="@MensajeError("el segundo apellido")" @bind-Value="Apellido2" />
+                    <MudTextField T="string" Label="Telefono" Required="true" RequiredError="@MensajeError("Telefono")" @bind-Value="@Telefono" />
+                    <MudTextField T="string" Label="Email" Required="true" RequiredError="@MensajeError("Email")" @bind-Value="@Email" />
+                </MudExpansionPanel>
+                <MudExpansionPanel Text="Dirección">
+                    <MudGrid Spacing="1">
+                        <MudItem>
+                            <MudTextField @bind-Value="CalleDireccion" Label="Calle" Variant="Variant.Text"></MudTextField>
+                        </MudItem>
+                        <MudItem sm="4">
+                            <MudSelect T="string" Label="Provincia" @bind-Value="ProvinciaSeleccionada">
+                                @foreach (var provincia in provincias) {<MudSelectItem Value="@provincia.Id.ToString()"> @provincia.NombreProvincia </MudSelectItem>}
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem sm="3">
+                            <MudSelect T="string" Label="Pais" @bind-Value="PaisSeleccionado">
+                                @foreach (var pais in paises) {<MudSelectItem Value="@pais.Id.ToString()"> @pais.NombrePais </MudSelectItem>}
+                            </MudSelect>
+                        </MudItem>
+                    </MudGrid>
+                </MudExpansionPanel>
+                <MudExpansionPanel Text="Datos Vacunación">
+                    <MudSelect T="string" Label="Tipo de sangre" @bind-Value="Tipo_Sangre">
+                        @foreach (var sangre in TiposSangres) {<MudSelectItem Value="@sangre"> @sangre </MudSelectItem>}
+                    </MudSelect>
+                    <MudDivider />
+                    <MudCheckBox @bind-Checked="@TenerCovid" Label="¿Ha tenido covid?" Color="Color.Primary"></MudCheckBox>
+                    <MudTextField T="string" Label="Justifique porque deben vacunarlo en su casa" RequiredError="@MensajeError("Justificacion")" @bind-Value="Justificacion" Lines="3" />
+                </MudExpansionPanel>
+            </MudExpansionPanels>
+        </MudForm>
         <MudCardActions>
-            <MudButton @onclick="@ReadApi" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Registrar</MudButton>
+            <MudButton @onclick="@Registrar" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Registrar</MudButton>
         </MudCardActions>
     </MudCard>
-    <MudText Typo="Typo.body2" Align="Align.Center" Class="my-4">
-        Fill out the form correctly to see the success message.
-    </MudText>
-
-    <MudExpansionPanels>
-        <MudExpansionPanel Text="Show Validation Summary">
-            @if (success)
-            {
-                <MudText Color="Color.Success">Success</MudText>
-            }
-            else
-            {
-                <MudText Color="@Color.Error">
-                    <ValidationSummary />
-                </MudText>
-            }
-        </MudExpansionPanel>
-    </MudExpansionPanels>
 </div>
 
 @code {
 
-    MudForm form;
-    bool showMarker = false;
-    bool success;
-    string MensajeError(string field) => $"{field} debe introducirse!";
-    public string Cedula { get; set; }
+        MudForm form;
+        bool showMarker = false;
+        bool success;
+        string[] errors = { };
+        string MensajeError(string field) => $"{field} debe introducirse!";
+public string Cedula { get; set; }
     public string Nombres { get; set; }
     public string Apellido1 { get; set; }
     public string Apellido2 { get; set; }
+    public string Apellidos { get; set; }
     public string Telefono { get; set; }
     public string Email { get; set; }
     public string Tipo_Sangre { get; set; }
     public string Justificacion { get; set; }
-    public string TenerCovid { get; set; }
-    public string FechaNacimiento { get; set; }
+    public bool TenerCovid { get; set; } = false;
     public string ProvinciaSeleccionada { get; set; }
     public string PaisSeleccionado { get; set; }
     public string Latitud { get; set; }
     public string Longitud { get; set; }
     public string CalleDireccion { get; set; }
-    string link = "https://api.adamix.net/apec/cedula/";
-    string api;
-    string json;
-    CedulaApiResponse res;
+
+
+    private CedulaApiResponse datosCedula = new CedulaApiResponse();
 
     private List<Pais> paises = new List<Pais>();
-
     private List<Provincia> provincias = new List<Provincia>();
     private List<Persona> personas = new List<Persona>();
+    private List<Direccion> direcciones = new List<Direccion>();
+    private Direccion direccionPersona = new Direccion();
     private Direccion direccion = new Direccion();
     private Geocoding GeocodingDireccion = new Geocoding();
-    private List<Direccion> direcciones = new List<Direccion>();
+
+    private List<string> TiposSangres = new List<string>() { "O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-" };
+
+
     Persona persona = new Persona();
     Persona PersonaValidada = new Persona();
     Provincia provincia = new Provincia();
     Pais pais = new Pais();
 
+    public string CedulaSeleccionada { get; set; }
 
-
-    protected override async Task OnInitializedAsync()
-    {
+    protected override async Task OnInitializedAsync() {
+        provincias = await Http.GetFromJsonAsync<List<Provincia>>("api/provincias");
         personas = await Http.GetFromJsonAsync<List<Persona>>("api/personas");
+        paises = await Http.GetFromJsonAsync<List<Pais>>("api/paises");
     }
 
-    void ReadApi()
-    {
 
+    private async Task BuscarDatosCedula() {
+        if (!String.IsNullOrEmpty(CedulaSeleccionada) && CedulaSeleccionada.Length == 11) {
+            datosCedula = await Http.GetFromJsonAsync<CedulaApiResponse>($"https://api.adamix.net/apec/cedula/{CedulaSeleccionada}");
+            Nombres = datosCedula.Nombres;
+            Apellido1 = datosCedula.Apellido1;
+            Apellido2 = datosCedula.Apellido2;
 
-        try
-        {
-            var cedual = Int64.Parse(Cedula);
         }
-        catch (FormatException e)
-        {
-
-            return;
-        }
-
-        api = link + Cedula;
-
-        json = new WebClient().DownloadString(api);
-
-        res = JsonConvert.DeserializeObject<CedulaApiResponse>(json);
-
-        Nombres = res.Nombres;
-        Apellido1 = res.Apellido1;
-        Apellido2 = res.Apellido2;
-
-        Registrar();
-
+        //Console.WriteLine(CedulaSeleccionada);
     }
 
-    private async Task Registrar()
-    {
-        if (!String.IsNullOrEmpty(CalleDireccion) && !String.IsNullOrEmpty(ProvinciaSeleccionada))
-        {
-            GeocodingDireccion = await Http.GetFromJsonAsync<Geocoding>($"https://maps.googleapis.com/maps/api/geocode/json?address={CalleDireccion.Replace(" ", "+")},+{ProvinciaSeleccionada.Replace(" ", "+")}&key=AIzaSyD2tTEiP_uPyq8Re9YnQyD6LkB5TGX1xnw");
-            Latitud = GeocodingDireccion.Results[0].Geometry.Location.Lat.ToString();
-            Longitud = GeocodingDireccion.Results[0].Geometry.Location.Lng.ToString();
-            persona.Cedula = Cedula;
-            persona.Nombres = Nombres;
-            persona.Apellido1 = Apellido1;
-            persona.Apellido2 = Apellido2;
-            persona.Telefono = Telefono;
-            persona.Email = Email;
+    private async Task Registrar() {
+        if (!String.IsNullOrEmpty(CalleDireccion) && !String.IsNullOrEmpty(ProvinciaSeleccionada)) {
+            PersonaValidada = personas.Where(x => x.Cedula == CedulaSeleccionada).FirstOrDefault();
 
-            direccion.ProvinciaId = int.Parse(ProvinciaSeleccionada);
-            direccion.PaisId = int.Parse(PaisSeleccionado);
-            direccion.Calle = CalleDireccion;
+            if (PersonaValidada != null) {
+                Snackbar.Add($"Ya se ha registrado, no puede hacerlo de nuevo.", Severity.Error);
 
-            direccion.Latitud = Convert.ToDecimal(Latitud);
-            direccion.Logitud = Convert.ToDecimal(Longitud);
+            } else {
+                GeocodingDireccion = await Http.GetFromJsonAsync<Geocoding>($"https://maps.googleapis.com/maps/api/geocode/json?address={CalleDireccion.Replace(" ", "+")},+{ProvinciaSeleccionada.Replace(" ", "+")}&key=AIzaSyD2tTEiP_uPyq8Re9YnQyD6LkB5TGX1xnw");
+                Latitud = GeocodingDireccion.Results[0].Geometry.Location.Lat.ToString();
+                Longitud = GeocodingDireccion.Results[0].Geometry.Location.Lng.ToString();
 
-            var respuesta = await Http.PostAsJsonAsync("api/direcciones", direccion);
-            var respuestaPersona = await Http.PostAsJsonAsync("api/personas", persona);
+                direccion.ProvinciaId = int.Parse(ProvinciaSeleccionada);
+                direccion.PaisId = int.Parse(PaisSeleccionado);
+                direccion.Calle = CalleDireccion;
 
-            if (respuestaPersona.IsSuccessStatusCode)
-            {
-                Snackbar.Add($"{Nombres} {Apellido1} {Apellido2} Registrado correctamente.", Severity.Success);
-                navigationManager.NavigateTo("exportar");
+                direccion.Latitud = Convert.ToDecimal(Latitud);
+                direccion.Logitud = Convert.ToDecimal(Longitud);
+
+                var respuesta = await Http.PostAsJsonAsync("api/direcciones", direccion);
+
+                if (respuesta.IsSuccessStatusCode) {
+                    direcciones = await Http.GetFromJsonAsync<List<Direccion>>("api/direcciones");
+                    if (direcciones.Count > 0) {
+                        direccionPersona = direcciones.LastOrDefault();
+
+                        //Creando persona correctamente
+
+                        persona.Cedula = CedulaSeleccionada;
+                        persona.Nombres = Nombres;
+                        persona.Apellido1 = Apellido1;
+                        persona.Apellido2 = Apellido2;
+                        persona.Telefono = Telefono;
+                        persona.Email = Email;
+                        persona.TipoSangre = Tipo_Sangre;
+                        persona.EstatusCovid = TenerCovid == true ? 1 : 0;
+                        persona.Justifacion = Justificacion;
+                        persona.DireccionId = direccionPersona.Id;
+
+
+                        var respuestaPersona = await Http.PostAsJsonAsync("api/personas", persona);
+
+                        if (respuestaPersona.IsSuccessStatusCode) {
+
+                            //AQUI VA EL ENVIO DEL CORREO
+                            //
+                            //
+                            //
+                            //
+
+
+                            Snackbar.Add($"{Nombres} {Apellido1} {Apellido2} ha sido registrado correctamente.", Severity.Success);
+                            navigationManager.NavigateTo("view");
+                        } else {
+                            Snackbar.Add($"Ha ocurrido un error.", Severity.Error);
+                        }
+                    }
+
+                }
             }
-            else
-            {
-                Snackbar.Add($"Ha ocurrido un error.", Severity.Error);
-
-            }
 
         }
+
     }
-
-    //public class RegisterAccountForm
-    //{
-    //    [Required]
-    //    [StringLength(8, ErrorMessage = "Name length can't be more than 8.")]
-    //    public string Username { get; set; }
-
-    //    [Required]
-    //    [EmailAddress]
-    //    public string Email { get; set; }
-
-    //    [Required]
-    //    [StringLength(30, ErrorMessage = "Password must be at least 8 characters long.", MinimumLength = 8)]
-    //    public string Password { get; set; }
-
-    //    [Required]
-    //    [Compare(nameof(Password))]
-    //    public string Password2 { get; set; }
-
-    //}
-
-
-
-    private void OnValidSubmit(EditContext context)
-    {
-        success = true;
-        StateHasChanged();
-    }
-
 }
-

@@ -1,6 +1,77 @@
 ﻿@page "/view"
-<h3>View</h3>
+@inject HttpClient Http
+@inject NavigationManager navigationManager
+
+
+@if (personas != null) {
+    if (modoMapa) {
+        <MudGrid>
+            <br />
+            <MudButton OnClick="@Modo" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">@modoName</MudButton>
+            <MudItem xs="12">
+                <RadzenGoogleMap style="height: 600px;" Zoom=@zoom Center=@(new Radzen.GoogleMapPosition() { Lat = 18.6176122, Lng = -68.7085308 })>
+                    <Markers>
+                        @foreach (var persona in personas) {
+                            <RadzenGoogleMapMarker Title="" Label="@persona.Nombres" Position=@(new Radzen.GoogleMapPosition() { Lat = double.Parse(persona.Direccion.Latitud.ToString()), Lng =  double.Parse(persona.Direccion.Logitud.ToString()) }) />
+                        }
+                    </Markers>
+                </RadzenGoogleMap>
+            </MudItem>
+        </MudGrid>
+    } else {
+        <MudTable Items="@personas" Hover="@true" Striped="@true">
+            <ToolBarContent>
+                <MudText Typo="Typo.h6">Personas con citas</MudText>
+                <MudButton OnClick="@Modo" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">@modoName</MudButton>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh>Cedula</MudTh>
+                <MudTh>Nombres </MudTh>
+                <MudTh>Apellidos</MudTh>
+                <MudTh>Teléfono</MudTh>
+                <MudTh>Email</MudTh>
+                <MudTh>Provincia</MudTh>
+                <MudTh>Tipo de sangre</MudTh>
+                <MudTh>Ha tenido covid</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Cedula">@context.Cedula</MudTd>
+                <MudTd DataLabel="Nombres">@context.Nombres</MudTd>
+                <MudTd DataLabel="Apellidos">@($"{context.Apellido1} {context.Apellido2}") </MudTd>
+                <MudTd DataLabel="Teléfono">@context.Telefono</MudTd>
+                <MudTd DataLabel="Email">@context.Email</MudTd>
+                <MudTd DataLabel="Provincia">@context.Direccion.Provincia.NombreProvincia</MudTd>
+                <MudTd DataLabel="Tipo de sangre">@context.TipoSangre</MudTd>
+                <MudTd DataLabel="Ha tenido covid">@(context.EstatusCovid == 1 ? "Si": "No")</MudTd>
+            </RowTemplate>
+        </MudTable>
+    }
+}
 
 @code {
+    string modoName = "Modo Mapa";
+    bool modoMapa = false;
+    int zoom = 8;
+    private List<Persona> personas = new List<Persona>();
+    public int Id { get; set; }
+
+    protected override async Task OnInitializedAsync() {
+        personas = await Http.GetFromJsonAsync<List<Persona>>("api/personas");
+        foreach (var persona in personas) {
+            Console.WriteLine(persona.Direccion.Latitud);
+            Console.WriteLine(persona.Direccion.Logitud);
+        }
+    }
+
+    private void Modo() {
+        if (modoMapa) {
+            modoName = "Modo Mapa";
+            modoMapa = false;
+        } else {
+            modoMapa = true;
+            modoName = "Modo Lista";
+        }
+
+    }
 
 }
