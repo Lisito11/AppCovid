@@ -1,3 +1,5 @@
+using AppCovid.Server.Interfaces;
+using AppCovid.Server.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -23,6 +25,9 @@ namespace AppCovid.Server {
             services.AddRazorPages();
             services.AddDbContext<dajd2mj0ciopa3Context>(options => options.UseNpgsql(Configuration.GetConnectionString("ConnectionString")));
             services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+            services.AddTransient<IEmailSender, EmailSender>();
+            services.Configure<EmailSenderOptions>(Configuration.GetSection("EmailSenderOptions"));
+
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {

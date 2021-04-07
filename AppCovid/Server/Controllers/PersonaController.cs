@@ -5,10 +5,9 @@ using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using AppCovid.Server.Interfaces;
 
 namespace AppCovid.Server.Controllers {
     [ApiController]
@@ -16,10 +15,12 @@ namespace AppCovid.Server.Controllers {
     public class PersonaController : CustomBaseController {
         private readonly dajd2mj0ciopa3Context context;
         private readonly IMapper mapper;
-        public PersonaController(dajd2mj0ciopa3Context context, IMapper mapper) : base(context, mapper) {
+
+        public PersonaController(dajd2mj0ciopa3Context context, IMapper mapper, IEmailSender emailSender) : base(context, mapper) {
             this.context = context;
             this.mapper = mapper;
         }
+
         //Metodo Get
         [HttpGet]
         public async Task<ActionResult<List<PersonaDTO>>> GetVacunados() {

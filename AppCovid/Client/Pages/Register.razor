@@ -166,39 +166,9 @@
                         if (respuestaPersona.IsSuccessStatusCode) {
 
                             //AQUI VA EL ENVIO DEL CORREO
-                            //
+                            await Http.PostAsJsonAsync("api/email", persona);
 
-
-                            using (MailMessage email = new MailMessage())
-                            {
-                                email.From = new MailAddress("blazorprueba01@gmail.com");
-                                email.To.Add(Email);
-                                email.Subject = "Confirmando Vancuna";
-                                email.Body = "<h1>Gracias por usar nuestros servicios</h1>" +
-                                        "<p> Nombre: "+Nombres+"</p>" +
-                                        "<p> Apellidos: "+ Apellido1 + Apellido2+"</p>" +
-                                        "<p> Telefono: " + Telefono + "</p>" +
-                                        "<p> Cedudla: " + Cedula + "</p>" +
-                                        "<p> Tipo de sangre: " + Tipo_Sangre + "</p>" +
-                                        "<p> Email: " + Email + "</p>" +
-                                        "<p> Justificacion: " + Justificacion + "</p>";
-
-                                email.IsBodyHtml = true;
-
-                                using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
-                                {
-                                    smtp.Credentials = new System.Net.NetworkCredential("blazorprueba01@gmail.com", "PruebaEmail05");
-                                    smtp.EnableSsl = true;
-                                    smtp.Send(email);
-
-
-                                }
-                            }
-
-
-
-
-                            Snackbar.Add($"{Nombres} {Apellido1} {Apellido2} ha sido registrado correctamente.", Severity.Success);
+                            Snackbar.Add($"{Nombres} {Apellido1} {Apellido2} ha sido registrado correctamente y se la he enviado un correo.", Severity.Success);
                             navigationManager.NavigateTo("view");
                         } else {
                             Snackbar.Add($"Ha ocurrido un error.", Severity.Error);
